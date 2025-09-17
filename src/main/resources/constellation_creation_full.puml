@@ -1,0 +1,80 @@
+@startuml
+title Sequence – Generate Annual Plan
+
+actor User
+participant "ConstellationController"          as CC
+participant "ConstellationInputValidator"      as CIV
+participant "ConstellationCreationFacade"      as CCF
+participant "PersonDatabaseFacade"             as PDF
+participant "DateCreationFacade"               as DCF
+participant "ConstellationEntryCreationFacade" as CECF
+participant "ConstellationDatabaseFacade"      as CDF
+participant "ResultZipCreatorService"          as RZCS
+participant "WorkbookFileCreatorService"       as WFCS
+participant "AnnualSheetCreator"                as ASC
+participant "StatisticsSheetCreator"            as SSC
+participant "ICSFileCreatorService"            as ICSFCS
+
+database  "PersonDatabase"        as PD
+database  "ConstellationDatabase" as CD
+database  "Storage"               as S
+
+User -> CC : POST /constellations { constellationInput }
+CC -> CIV : validateInput(constellationInput)
+
+alt invalid
+  CIV --> CC : throws ValidationException
+  CC --> User : 400 Bad Request
+  return
+else valid
+  CIV --> CC : ok
+end
+
+CC -> CCF : createConstellationFile(constellationInput, constellationId)
+
+' Persist people (simplified from loop)
+CCF -> PDF : savePerson(constellationId, personName)
+PDF -> PD : insert(Person)
+PD  --> PDF : person
+PDF --> CCF : person
+
+' Build dates and schedule
+CCF -> DCF : createDates(year, rotation)
+DCF --> CCF : dates
+
+CCF -> CECF : scheduleGroups(people, groupSize, rounds, constellationId)
+CECF -> CD : insert(ConstellationEntry)
+CD  --> CECF : ok
+CECF --> CCF : schedule
+
+' Generate artifacts (ZIP with workbook + ICS)
+CCF -> RZCS : createFile(constellationId, schedule, dates)
+
+RZCS -> WFCS : createWorkbook(constellationId)
+WFCS -> ASC  : createAnnualSheet(workbook, schedule, dates)
+ASC  --> WFCS : ok
+WFCS -> SSC  : createStatisticsSheet(workbook, schedule)
+SSC  --> WFCS : ok
+WFCS --> RZCS : workbook
+
+RZCS -> ICSFCS : createICSFile(schedule, dates)
+ICSFCS --> RZCS : icsFile
+
+' (Future) upload target
+
+alt current
+  RZCS --> CCF : zipFile
+  CCF  --> CC  : zipFile
+  CC   --> User: 200 with ZipFile
+else with storage upload
+  RZCS -> S : upload(zip)
+  S  --> RZCS : url
+
+  RZCS --> CCF : URL
+  CCF  --> CC  : URL
+  CC   --> User: 201 with URL
+end
+
+
+
+@enduml

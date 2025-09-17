@@ -1,0 +1,29 @@
+@startuml
+title Sequence – Generate Annual Plan
+
+actor User
+participant "Rest Controller"          as CC
+participant "Constellation Creator"      as CCF
+participant "Annual Plan Creator"        as ASC
+participant "Statistics Creator"            as SSC
+participant "ICS Creator"            as ICSFCS
+
+database  "Constellation DB" as CD
+
+User -> CC : POST /constellations
+CC -> CCF : Create Constellations
+
+alt Annual Plan
+    CCF -> ASC : Create Annual Plan
+    ASC -> CD : Persist Annual Plan
+    CCF -> ICSFCS : Create ICS File
+    ICSFCS --> CCF : return ICS File
+    ASC --> CCF : return Annual Plan
+    CCF --> User : return Annual Plan & ICS File
+else Statistics
+    CCF -> SSC : Create Statistics
+    SSC --> CCF : return Statistics
+    CCF --> User : return Statistics
+end
+
+@enduml

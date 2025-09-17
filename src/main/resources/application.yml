@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: groupchat-constellation-creator-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: secret
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    schemas: ${spring.jpa.properties.hibernate.default_schema}
+    table: flyway_schema_version
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: true
+    properties:
+      hibernate:
+        default_schema: groupchat_constellation_creator
