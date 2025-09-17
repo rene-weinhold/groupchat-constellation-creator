@@ -16,4 +16,3 @@ public interface WorkbookSheetCreator {
     void createSheet(Workbook workbook, List<ConstellationEntry> constellationEntries, List<Person> peopleOfConstellation,
         List<LocalDate> dates);
 }
-s
