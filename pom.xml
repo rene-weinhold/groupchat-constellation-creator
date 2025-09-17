@@ -10,22 +10,24 @@
     </parent>
     <groupId>com.weinhold</groupId>
     <artifactId>groupchat-constellation-creator</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>Constellation Creator</name>
-    <description>Demo project for Spring Boot</description>
+    <version>1.0.0</version>
+    <name>Groupchat Constellation Creator</name>
+    <description>A constellation creator, that is based on the social golfer problem.</description>
     <url/>
     <licenses>
-        <license/>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
     </licenses>
     <developers>
-        <developer/>
+        <developer>
+            <id>rene-weinhold</id>
+            <name>René Weinhold</name>
+        </developer>
     </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
+
     <properties>
         <java.version>24</java.version>
     </properties>
