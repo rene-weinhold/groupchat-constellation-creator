@@ -50,6 +50,9 @@ public class ConstellationEntryCreationFacade {
      * @return all constellation entries created for this run
      */
     public List<ConstellationEntry> scheduleGroups(List<Person> people, int groupSize, int rounds, UUID constellationId) {
+        if (people.isEmpty()) {
+            return List.of();
+        }
         var rng = new Random();
         var targetSizes = computeTargetSizes(people.size(), groupSize);
 
